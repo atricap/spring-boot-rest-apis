@@ -1,5 +1,7 @@
 package com.luv2code.springboot.todos.response;
 
+import com.luv2code.springboot.todos.entity.Todo;
+
 public class TodoResponse {
     private long id;
     private String title;
@@ -13,6 +15,16 @@ public class TodoResponse {
         this.description = description;
         this.priority = priority;
         this.complete = complete;
+    }
+
+    public static TodoResponse from(Todo todo) {
+        return new TodoResponse(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getDescription(),
+                todo.getPriority(),
+                todo.isComplete()
+        );
     }
 
     public long getId() {

@@ -12,7 +12,8 @@ public class FindAuthenticatedUserImpl implements FindAuthenticatedUser {
     @Override
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() ||
+        if (authentication == null ||
+                !authentication.isAuthenticated() ||
                 authentication.getPrincipal().equals("anonymousUser")) {
             throw new AccessDeniedException("Authentication required");
         }
@@ -20,3 +21,4 @@ public class FindAuthenticatedUserImpl implements FindAuthenticatedUser {
         return (User) authentication.getPrincipal();
     }
 }
+

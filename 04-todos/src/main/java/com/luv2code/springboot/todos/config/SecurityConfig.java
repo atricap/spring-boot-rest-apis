@@ -51,42 +51,38 @@ public class SecurityConfig {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
             response.setHeader("WWW-Authenticate", "");
-            response.getWriter().write("{\"error\": \"Unauthorized access\"}");
+            response.getWriter().write("""
+                    {"error":"Unauthorized access"}""");
         };
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(configurer ->
-                configurer
-                        .requestMatchers("/api/auth/**","/swagger-ui/**", "/v3/api-docs/**",
-                                "/swagger-resources/**", "/webjars/**", "/docs").permitAll()
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/docs"
+                        ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                        );
+                        .anyRequest().authenticated())
 
-        http.csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable())
 
-        http.exceptionHandling(exceptionHandling ->
-                exceptionHandling
-                        .authenticationEntryPoint(authenticationEntryPoint()));
+                .exceptionHandling(exc -> exc
+                        .authenticationEntryPoint(authenticationEntryPoint()))
 
-        http.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        ;
         return http.build();
     }
 
 }
-
-
-
-
-
-
-
-
-
 

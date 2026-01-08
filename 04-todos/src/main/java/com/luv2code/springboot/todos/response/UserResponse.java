@@ -1,6 +1,7 @@
 package com.luv2code.springboot.todos.response;
 
 import com.luv2code.springboot.todos.entity.Authority;
+import com.luv2code.springboot.todos.entity.User;
 
 import java.util.List;
 
@@ -19,6 +20,16 @@ public class UserResponse {
         this.fullName = fullName;
         this.email = email;
         this.authorities = authorities;
+    }
+
+    public static UserResponse from(User user) {
+        return new UserResponse(
+                user.getId(),
+                "%s %s".formatted(user.getFirstName(), user.getLastName()),
+                user.getEmail(),
+                user.getAuthorities().stream()
+                        .map(auth -> (Authority) auth)
+                        .toList());
     }
 
     public long getId() {

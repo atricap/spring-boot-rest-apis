@@ -1,5 +1,6 @@
 package com.luv2code.springboot.todos.entity;
 
+import com.luv2code.springboot.todos.request.TodoRequest;
 import jakarta.persistence.*;
 
 @Table(name = "todos")
@@ -28,7 +29,8 @@ public class Todo {
     private User owner;
 
     // Default constructor (required by JPA)
-    public Todo() {}
+    public Todo() {
+    }
 
     public Todo(String title, String description, int priority, boolean complete, User owner) {
         this.title = title;
@@ -36,6 +38,16 @@ public class Todo {
         this.priority = priority;
         this.complete = complete;
         this.owner = owner;
+    }
+
+    public static Todo from(TodoRequest todoRequest, User user) {
+        return new Todo(
+                todoRequest.getTitle(),
+                todoRequest.getDescription(),
+                todoRequest.getPriority(),
+                false,
+                user
+        );
     }
 
     public long getId() {

@@ -27,49 +27,41 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return StreamSupport.stream(userRepository.findAll().spliterator(), false)
-                .map(this::convertToUserResponse).toList();
+                .map(UserResponse::from)
+                .toList();
     }
 
     @Override
     @Transactional
     public UserResponse promoteToAdmin(long userId) {
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user.isEmpty() || user.get().getAuthorities().stream().anyMatch(authority -> "ROLE_ADMIN"
-                .equals(authority.getAuthority()))) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || userOpt.get().isAdmin()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "User does not exist or already an admin");
+                    "User does not exist or is already an admin");
         }
+        User user = userOpt.get();
 
-        List<Authority> authorities = new ArrayList<>();
-        authorities.add(new Authority("ROLE_EMPLOYEE"));
-        authorities.add(new Authority("ROLE_ADMIN"));
-        user.get().setAuthorities(authorities);
+        var authorities = new ArrayList<Authority>();
+        authorities.add(Authority.EMPLOYEE);
+        authorities.add(Authority.ADMIN);
+        user.setAuthorities(authorities);
 
-        User savedUser = userRepository.save(user.get());
+        User savedUser = userRepository.save(user);
 
-        return convertToUserResponse(savedUser);
+        return UserResponse.from(savedUser);
     }
 
     @Override
     @Transactional
     public void deleteNonAdminUser(long userId) {
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user.isEmpty() || user.get().getAuthorities().stream().anyMatch(authority -> "ROLE_ADMIN"
-                .equals(authority.getAuthority()))) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty() || userOpt.get().isAdmin()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "User does not exist or already an admin");
+                    "User does not exist or is already an admin");
         }
+        User user = userOpt.get();
 
-        userRepository.delete(user.get());
-    }
-
-    private UserResponse convertToUserResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getFirstName() + " " + user.getLastName(),
-                user.getEmail(),
-                user.getAuthorities().stream().map(auth -> (Authority) auth).toList());
+        userRepository.delete(user);
     }
 }
+
