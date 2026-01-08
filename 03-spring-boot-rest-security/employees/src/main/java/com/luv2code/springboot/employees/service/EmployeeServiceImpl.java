@@ -11,15 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository) {
-        employeeRepository = theEmployeeRepository;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
     }
-
 
     @Override
     public List<Employee> findAll() {
@@ -27,45 +26,29 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Employee findById(long theId) {
-
-        Optional<Employee> result = employeeRepository.findById(theId);
-
-        Employee theEmployee = null;
-
-        if (result.isPresent()) {
-            theEmployee = result.get();
-        } else {
-            throw new RuntimeException("Did not find employee id - " + theId);
-        }
-
-        return theEmployee;
+    public Employee findById(long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Did not find employee id = " + id));
     }
 
     @Transactional
     @Override
     public Employee save(EmployeeRequest employeeRequest) {
-        Employee theEmployee = convertToEmployee(0, employeeRequest);
-        return employeeRepository.save(theEmployee);
+        Employee employee = Employee.from(0, employeeRequest);
+        return employeeRepository.save(employee);
     }
 
     @Transactional
     @Override
     public Employee update(long id, EmployeeRequest employeeRequest) {
-        Employee theEmployee = convertToEmployee(id, employeeRequest);
-        return employeeRepository.save(theEmployee);
-    }
-
-    @Override
-    public Employee convertToEmployee(long id, EmployeeRequest employeeRequest) {
-        return new Employee(id, employeeRequest.getFirstName(),
-                employeeRequest.getLastName(),
-                employeeRequest.getEmail());
+        Employee employee = Employee.from(id, employeeRequest);
+        return employeeRepository.save(employee);
     }
 
     @Transactional
     @Override
-    public void deleteById(long theId) {
-        employeeRepository.deleteById(theId);
+    public void deleteById(long id) {
+        employeeRepository.deleteById(id);
     }
 }
+

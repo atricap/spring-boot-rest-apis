@@ -9,13 +9,13 @@ public interface EmployeeService {
 
     List<Employee> findAll();
 
-    Employee findById(long theId);
+    Employee findById(long id);
 
     Employee save(EmployeeRequest employeeRequest);
 
     Employee update(long id, EmployeeRequest employeeRequest);
 
-    Employee convertToEmployee(long id, EmployeeRequest employeeRequest);
+    void deleteById(long id);
 
-    void deleteById(long theId);
 }
+

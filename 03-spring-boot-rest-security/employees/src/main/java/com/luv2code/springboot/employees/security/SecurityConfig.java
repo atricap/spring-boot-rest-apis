@@ -6,6 +6,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -16,32 +19,55 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfig {
 
+//    @Bean
+//    public InMemoryUserDetailsManager userDetailsManager() {
+//        UserDetails john = User.builder()
+//                .username("john")
+//                .password("{noop}test123")
+//                .roles("EMPLOYEE")
+//                .build();
+//
+//        UserDetails mary = User.builder()
+//                .username("mary")
+//                .password("{noop}test123")
+//                .roles("EMPLOYEE", "MANAGER")
+//                .build();
+//
+//        UserDetails susan = User.builder()
+//                .username("susan")
+//                .password("{noop}test123")
+//                .roles("EMPLOYEE", "MANAGER", "ADMIN")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(john, mary, susan);
+//    }
+
+//    @Bean
+//    public UserDetailsManager userDetailsManager(DataSource dataSource) {
+//        return new JdbcUserDetailsManager(dataSource);
+//    }
+
     // add support for JDBC ... no more hardcoded users :-)
 
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
-
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+        var udm = new JdbcUserDetailsManager(dataSource);
 
         // define query to retrieve a user by username
-        jdbcUserDetailsManager.setUsersByUsernameQuery(
-                "select user_id, password, active from system_users where user_id=?"
-        );
+        udm.setUsersByUsernameQuery(
+                "select user_id, password, active from system_users where user_id=?" );
 
         // define query to retrieve the authorities/roles by username
+        udm.setAuthoritiesByUsernameQuery(
+                "select user_id, role from roles where user_id=?" );
 
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "select user_id, role from roles where user_id=?"
-        );
-
-        return jdbcUserDetailsManager;
+        return udm;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests(configurer ->
-                configurer
+        http
+                .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/h2-console/**").permitAll()
                         .requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
@@ -50,19 +76,25 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/employees").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN")
-                );
+                )
 
-        http.httpBasic(httpBasicCustomizer -> httpBasicCustomizer.disable());
+                // Configure authentication so that swagger ui can use it (login, logout)
+                .httpBasic(basic -> basic.disable())
 
         // Use HTTP Basic Authentication
-        http.httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults())
 
-        http.csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable())
 
-        http.exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(authenticationEntryPoint()));
+                .exceptionHandling(exc -> exc
+                        .authenticationEntryPoint(authenticationEntryPoint()))
 
-        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+                // Fix for h2-console not shown correctly (uses iframes)
+                .headers(headers -> headers
+//                        .frameOptions(frameOptions -> frameOptions.disable()))
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("frame-ancestors 'self'")))
+        ;
 
         return http.build();
     }
@@ -75,23 +107,12 @@ public class SecurityConfig {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
 
-            // Removes the WWW-Authenticate header to prevent browser popup
+            // Remove the WWW-Authenticate header to prevent browser popup
             response.setHeader("WWW-Authenticate", "");
 
-            response.getWriter().write("{\"error\": \"Unauthorized access\"}");
+            response.getWriter().write("""
+                    {"error": "Unauthorized access"}""");
         };
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
 
