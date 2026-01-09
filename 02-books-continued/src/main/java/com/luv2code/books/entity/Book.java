@@ -1,4 +1,6 @@
-package com.luv2code.books.entity;
+package com.luv2code.restapis.books.entity;
+
+import com.luv2code.restapis.books.request.BookRequest;
 
 public class Book {
 
@@ -18,6 +20,16 @@ public class Book {
         this.author = author;
         this.category = category;
         this.rating = rating;
+    }
+
+    public static Book from(long id, BookRequest bookRequest) {
+        return new Book(
+                id,
+                bookRequest.getTitle(),
+                bookRequest.getAuthor(),
+                bookRequest.getCategory(),
+                bookRequest.getRating()
+        );
     }
 
     public long getId() {

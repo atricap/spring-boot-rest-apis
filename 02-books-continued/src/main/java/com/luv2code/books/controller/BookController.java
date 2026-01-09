@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 @Tag(name = "Books Rest API Endpoints", description = "Operations related to books")
 @RestController
@@ -40,10 +41,11 @@ public class BookController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<Book> getBooks(@Parameter(description = "Optional query parameter")
-                                   @RequestParam(required = false) String category) {
+            @RequestParam(required = false) String category) {
         if (category == null) {
             return books;
         }
+
         return books.stream()
                 .filter(book -> book.getCategory().equalsIgnoreCase(category))
                 .toList();
@@ -52,8 +54,8 @@ public class BookController {
     @Operation(summary = "Get a book by Id", description = "Retrieve a specific book by Id")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public Book getBookById(@Parameter(description = "Id of book to be retrieved")
-                                @PathVariable @Min(value = 1) long id) {
+    public Book getBookById(@Parameter(description = "Id of the book to be retrieved")
+            @PathVariable @Min(1) long id) {
         return books.stream()
                 .filter(book -> book.getId() == id)
                 .findFirst()
@@ -66,7 +68,7 @@ public class BookController {
     public void createBook(@Valid @RequestBody BookRequest bookRequest) {
         long id = books.isEmpty() ? 1 : books.get(books.size() - 1).getId() + 1;
 
-        Book book = convertToBook(id, bookRequest);
+        Book book = Book.from(id, bookRequest);
 
         books.add(book);
     }
@@ -75,12 +77,14 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public Book updateBook(@Parameter(description = "Id of the book to update")
-                               @PathVariable @Min(value = 1) long id,
+                           @PathVariable @Min(1) long id,
                            @Valid @RequestBody BookRequest bookRequest) {
-        for (int i = 0; i< books.size(); i++) {
-            if (books.get(i).getId() == id) {
-                Book updatedBook = convertToBook(id, bookRequest);
-                books.set(i, updatedBook);
+        ListIterator<Book> iter = books.listIterator();
+        while (iter.hasNext()) {
+            Book book = iter.next();
+            if (book.getId() == id) {
+                Book updatedBook = Book.from(id, bookRequest);
+                iter.set(updatedBook);
                 return updatedBook;
             }
         }
@@ -90,7 +94,7 @@ public class BookController {
     @Operation(summary = "Delete a book", description = "Remove a book from the list")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void deleteBook(@Parameter(description = "Id of the book to delete") @PathVariable @Min(value = 1) long id) {
+    public void deleteBook(@Parameter(description = "Id of the book to delete") @PathVariable @Min(1) long id) {
         books.stream()
                 .filter(book -> book.getId() == id)
                 .findFirst()
@@ -98,20 +102,5 @@ public class BookController {
 
         books.removeIf(book -> book.getId() == id);
     }
-
-    private Book convertToBook(long id, BookRequest bookRequest) {
-        return new Book(
-                id,
-                bookRequest.getTitle(),
-                bookRequest.getAuthor(),
-                bookRequest.getCategory(),
-                bookRequest.getRating()
-        );
-    }
 }
-
-
-
-
-
 
