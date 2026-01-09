@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 @RestController
 @RequestMapping("/api/books")
@@ -32,10 +33,16 @@ public class BookController {
         if (category == null) {
             return books;
         }
+
         return books.stream()
                 .filter(book -> book.getCategory().equalsIgnoreCase(category))
                 .toList();
     }
+
+//    @GetMapping("/{id}")
+//    public Book getBookByBookIndex(@PathVariable int id) {
+//        return books.get(id);
+//    }
 
     @GetMapping("/{title}")
     public Book getBookByTitle(@PathVariable String title) {
@@ -48,7 +55,7 @@ public class BookController {
     @PostMapping
     public void createBook(@RequestBody Book newBook) {
         boolean isNewBook = books.stream()
-                        .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
         if (isNewBook) {
             books.add(newBook);
         }
@@ -56,9 +63,11 @@ public class BookController {
 
     @PutMapping("/{title}")
     public void updateBook(@PathVariable String title, @RequestBody Book updatedBook) {
-        for (int i = 0; i< books.size(); i++) {
-            if (books.get(i).getTitle().equalsIgnoreCase(title)) {
-                books.set(i, updatedBook);
+        ListIterator<Book> iter = books.listIterator();
+        while (iter.hasNext()) {
+            Book book = iter.next();
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                iter.set(updatedBook);
                 return;
             }
         }
@@ -69,9 +78,4 @@ public class BookController {
         books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
     }
 }
-
-
-
-
-
 
