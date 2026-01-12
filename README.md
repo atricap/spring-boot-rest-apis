@@ -1,4 +1,4 @@
-# Spring Boot 4 REST APIs: Building Modern REST APIs: Building Modern REST APIs
+# Spring Boot 4 REST APIs: Building Modern REST APIs
 
 Modified source code of [luv2code's course](https://github.com/darbyluv2code/spring-boot-rest-apis). Includes my slight enhancements, and brings in the Clojure nREPL to play around.
 
@@ -12,6 +12,13 @@ Modified source code of [luv2code's course](https://github.com/darbyluv2code/spr
   State after the first step of project 03-spring-boot-rest-security.
 * **atricap/03-step-2a**\
   State after about the second step of project 03-spring-boot-rest-security, adding a `UserDetailsManager`.
+
+## Tags
+
+* **atricap/course-finished/\***\
+  The state directly after I finished the course. This is the code, how I wrote it.
+* **atricap/spring-boot-\***\
+  Updates for newer versions of Spring Boot, merged in from the upstream main branch.
 
 ## License
 This source code and all related course materials are provided for your personal learning and educational use as part of a course by [luv2code LLC](https://www.luv2code.com).
