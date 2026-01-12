@@ -1,4 +1,4 @@
-# Spring Boot 4 REST APIs: Building Modern APIs with Spring Boot
+# Spring Boot 4 REST APIs: Building Modern REST APIs: Building Modern REST APIs
 
 Modified source code of [luv2code's course](https://github.com/darbyluv2code/spring-boot-rest-apis). Includes my slight enhancements, and brings in the Clojure nREPL to play around.
 
