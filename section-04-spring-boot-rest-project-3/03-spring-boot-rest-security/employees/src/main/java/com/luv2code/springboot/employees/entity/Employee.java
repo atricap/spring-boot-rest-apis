@@ -1,6 +1,6 @@
 package com.luv2code.springboot.employees.entity;
 
-import com.luv2code.restapis.employees.request.EmployeeRequest;
+import com.luv2code.springboot.employees.request.EmployeeRequest;
 import jakarta.persistence.*;
 
 @Entity
