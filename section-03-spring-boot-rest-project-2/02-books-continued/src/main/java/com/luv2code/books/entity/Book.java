@@ -1,6 +1,6 @@
-package com.luv2code.restapis.books.entity;
+package com.luv2code.books.entity;
 
-import com.luv2code.restapis.books.request.BookRequest;
+import com.luv2code.books.request.BookRequest;
 
 public class Book {
 
