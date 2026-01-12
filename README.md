@@ -12,6 +12,8 @@ Modified source code of [luv2code's course](https://github.com/darbyluv2code/spr
   State after the first step of project 03-spring-boot-rest-security.
 * **atricap/03-step-2a**\
   State after about the second step of project 03-spring-boot-rest-security, adding a `UserDetailsManager`.
+* **atricap/clojure**\
+  Dabble around with Clojure.
 
 ## Tags
 
