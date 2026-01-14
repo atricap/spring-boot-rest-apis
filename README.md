@@ -21,6 +21,8 @@ Modified source code of [luv2code's course](https://github.com/darbyluv2code/spr
   The state directly after I finished the course. This is the code, how I wrote it.
 * **atricap/spring-boot-\***\
   Updates for newer versions of Spring Boot, merged in from the upstream main branch.
+* **atricap/clojure/\***\
+  Waypoints on the Clojure road.
 
 ## License
 This source code and all related course materials are provided for your personal learning and educational use as part of a course by [luv2code LLC](https://www.luv2code.com).

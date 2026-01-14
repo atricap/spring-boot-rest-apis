@@ -11,6 +11,7 @@
 	<groupId>com.luv2code.springboot</groupId>
 	<artifactId>todos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>clojure</packaging>
 	<name>todos</name>
 	<description>Luv2code Project 4</description>
 	<url/>
@@ -28,8 +29,27 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
+
+		<clojure.nrepl.host>localhost</clojure.nrepl.host>
+		<clojure.nrepl.port>4005</clojure.nrepl.port>
+		<clojure.nrepl.keepRunning>true</clojure.nrepl.keepRunning>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>clojars</id>
+			<url>https://repo.clojars.org/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
+
+		<!-- Java deps -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -43,12 +63,15 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
+		<!-- Disable devtools to not interfere or surprise with Clojure dabbling (e.g. restarts main thread) -->
+<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+-->
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
@@ -90,10 +113,56 @@
 			<version>0.13.0</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- Clojure deps -->
+
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>clojure</artifactId>
+			<version>1.12.4</version>
+		</dependency>
+
+		<!-- Clojure nREPL deps (should only apply during nREPL session, so test scope) -->
+
+		<dependency>
+			<groupId>nrepl</groupId>
+			<artifactId>nrepl</artifactId>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>cider</groupId>
+			<artifactId>cider-nrepl</artifactId>
+			<version>0.58.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>refactor-nrepl</groupId>
+			<artifactId>refactor-nrepl</artifactId>
+			<version>3.11.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.theoryinpractise</groupId>
+				<artifactId>clojure-maven-plugin</artifactId>
+				<version>1.9.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<sourceDirectories>
+						<sourceDirectory>src/main/clojure</sourceDirectory>
+					</sourceDirectories>
+					<testSourceDirectories>
+						<testSourceDirectory>src/test/clojure</testSourceDirectory>
+					</testSourceDirectories>
+					<!-- Prevent any AOT classes from appearing in the maven generated JAR file -->
+					<temporaryOutputDirectory>true</temporaryOutputDirectory>
+					<runWithTests>true</runWithTests>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
