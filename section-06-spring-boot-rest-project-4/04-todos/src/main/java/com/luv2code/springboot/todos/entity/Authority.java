@@ -3,6 +3,8 @@ package com.luv2code.springboot.todos.entity;
 import jakarta.persistence.Embeddable;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Objects;
+
 @Embeddable
 public class Authority implements GrantedAuthority {
 
@@ -31,5 +33,23 @@ public class Authority implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return authority;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Authority authority1)) return false;
+        return Objects.equals(authority, authority1.authority);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(authority);
+    }
+
+    @Override
+    public String toString() {
+        return "Authority{" +
+                "authority='" + authority + '\'' +
+                '}';
     }
 }

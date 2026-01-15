@@ -4,6 +4,7 @@ import com.luv2code.springboot.todos.entity.Authority;
 import com.luv2code.springboot.todos.entity.User;
 
 import java.util.List;
+import java.util.Objects;
 
 public class UserResponse {
 
@@ -62,5 +63,30 @@ public class UserResponse {
 
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UserResponse that))
+            return false;
+        return id == that.id
+                && Objects.equals(fullName, that.fullName)
+                && Objects.equals(email, that.email)
+                && Objects.equals(authorities, that.authorities);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fullName, email, authorities);
+    }
+
+    @Override
+    public String toString() {
+        return "UserResponse{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", authorities=" + authorities +
+                '}';
     }
 }
