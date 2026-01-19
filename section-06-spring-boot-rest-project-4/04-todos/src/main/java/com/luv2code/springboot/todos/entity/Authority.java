@@ -9,8 +9,10 @@ import java.util.Objects;
 public class Authority implements GrantedAuthority {
 
     public static final String STR_EMPLOYEE = "ROLE_EMPLOYEE";
+    public static final String STR_MANAGER = "ROLE_MANAGER";
     public static final String STR_ADMIN = "ROLE_ADMIN";
     public static final Authority EMPLOYEE = new Authority(STR_EMPLOYEE);
+    public static final Authority MANAGER = new Authority(STR_MANAGER);
     public static final Authority ADMIN = new Authority(STR_ADMIN);
 
     private String authority;
